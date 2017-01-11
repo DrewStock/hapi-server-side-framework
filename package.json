@@ -9,7 +9,7 @@
   "scripts": {
     "start": "nodemon ./lib/server.js",
     "test": "MONGODB_URI=mongodb://localhost/fantasy-test mocha",
-    "test:watch": "MONGODB_URI=mongodb://localhost/fantasy-test nodemon --exec mocha"
+    "test:watch": "MONGODB_URI=mongodb://localhost/fantasy-test nodemon ./lib/server.js --exec mocha"
   },
   "repository": {
     "type": "git",

@@ -5,7 +5,7 @@ chai.use(chaiHttp);
 
 const connection = require( '../lib/setup_mongoose');
 
-const app = require( '../lib/app' );
+const app = require( '../lib/server' );
 
 describe( 'player', () => {
 
@@ -33,7 +33,7 @@ describe( 'player', () => {
 
     it( '/GET all', done => {
         request
-				.get( '/api/players' )
+				.get( '/players' )
 				.then( res => {
     assert.deepEqual( res.body, [] );
     done();
@@ -43,7 +43,7 @@ describe( 'player', () => {
 
     it( '/POST', done => {
         request
-				.post( '/api/players' )
+				.post( '/players' )
 				.send( antonio )
 				.then( res => {
     const player = res.body;
@@ -59,7 +59,7 @@ describe( 'player', () => {
 
     it( '/GET by id', done => {
         request
-    .get( `/api/players/${antonio._id}` )
+    .get( `/players/${antonio._id}` )
 			.then( res => {
     const player = res.body;
     assert.deepEqual( player, antonio );
