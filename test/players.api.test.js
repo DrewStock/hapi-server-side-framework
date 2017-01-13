@@ -1,33 +1,28 @@
 const chai = require('chai');
-// const chaiHttp = require('chai-http');
 const assert = chai.assert;
-// chai.use(chaiHttp);
 
 const connection = require( '../lib/setup_mongoose');
-
 const Server = require( '../lib/server' );
 
-describe( 'player e2e', () => {
+describe( 'players e2e', () => {
 
-    before( done => {
+    before(done => {
         const CONNECTED = 1;
         if (connection.readyState === CONNECTED) dropCollection();
         else connection.on('open', dropCollection);
 
         function dropCollection(){
             const name = 'players';
-            connection.db
-						.listCollections({ name })
-						.next( (err, collinfo) => {
+            connection.db.listCollections({ name })
+		.next( (err, collinfo) => {
     if (!collinfo) return done();
     connection.db.dropCollection(name, done);
 });
         }
+
     });
 
-
-
-    it ('GET all', done => {
+    it ('/GET - gets all', done => {
 
         const req = {
             method: 'GET',
@@ -48,7 +43,7 @@ describe( 'player e2e', () => {
         position: 'WR'
     };
 
-    it ('/POST', done => {
+    it ('/POST - adds a player', done => {
 
         const req = {
             method: 'POST',
@@ -62,13 +57,12 @@ describe( 'player e2e', () => {
             antonio._id = player._id;
             assert.deepEqual(res.statusCode, 200);
             assert.deepEqual(player.playerName, 'Antonio Brown');
-            // assert.ok(player._id);
             done();
         });
 
     });
 
-    it ('GET by id', done => {
+    it ('/GET - gets by id', done => {
 
         const req = {
             method: 'GET',
@@ -77,45 +71,54 @@ describe( 'player e2e', () => {
 
         Server.inject (req, res => {
             const player = res.result;
-            console.log(player);
-            assert.deepEqual(res.statusCode, 200);
             console.log(player._id);
-            console.log(antonio._id);
+            assert.deepEqual(res.statusCode, 200);
             assert.deepEqual(player._id, antonio._id);
             done();
         });
 
     });
 
-//     it( '/POST', done => {
-//         request
-// 				.post( '/players' )
-// 				.send( antonio )
-// 				.then( res => {
-//     const player = res.body;
-//     // console.log(team);
-//     assert.ok( player._id );
-//     antonio.__v = 0;
-//     antonio._id = player._id;
-//     done();
-// })
-// 			.catch( done );
-//
-//     });
 
-//     it( '/GET by id', done => {
-//         request
-//     .get( `/players/${antonio._id}` )
-// 			.then( res => {
-//     const player = res.body;
-//     assert.deepEqual( player, antonio );
-//     done();
-// })
-// 			.catch( done );
-//     });
-//
-//
-    // after( done => {
-    //     connection.close( done );
-    // });
+    const updated = {
+        playerName: 'Antonio Brown',
+        position: 'QB'
+    };
+
+    it('/PUT - updates a player', done => {
+
+        const req = {
+            method: 'PUT',
+            url: `/api/players/${antonio._id}`,
+            payload: updated
+        };
+
+        Server.inject (req, res => {
+            const player = res.result;
+            console.log(player);
+            assert.deepEqual(res.statusCode, 200);
+            assert.deepEqual(res.result.position, 'QB');
+            done();
+        });
+
+    });
+
+    it ('/DELETE - removes a player', done => {
+
+        const req = {
+            method: 'DELETE',
+            url: `/api/players/${antonio._id}`
+        };
+
+        Server.inject (req, res => {
+            const player = res.result;
+            console.log(player);
+            assert.deepEqual(res.statusCode, 200);
+            assert.deepEqual(player._id, antonio._id);
+            done();
+        });
+
+    });
+
+
 });
